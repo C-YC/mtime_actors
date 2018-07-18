@@ -35,7 +35,9 @@ def get_filmographies(url):
                 with open("../data/demo.txt", "a+")as m:
                     m.write(table[i].text + '``')
         if len(pages) > 1:
-            for r in range(1, len(pages)-1):
+            total = pages[len(pages) - 2].text
+            print "共有", total, "页。"
+            for r in range(1, int(total)+1):
                 filmography_urls = filmography_url + '#pageIndex=' + str(r)
                 print filmography_urls
                 time.sleep(0.5)
@@ -76,49 +78,54 @@ def works_processing(actor_name):
             if (len(all_info) - 1) / 5 > 0:
                 for i in range(1, len(all_info) - 1, 5):
                     try:
-                        if all_info[i+4] and "评分" not in all_info[i+4]:
+                        if all_info[i + 4] and "评分" not in all_info[i + 4]:
                             if "导演" in all_info[i + 2]:
-                                if "主演" in all_info[i+3]:
-                                    all_info.insert(i+4, "None")
+                                if "主演" in all_info[i + 3]:
+                                    all_info.insert(i + 4, "None")
                                 else:
-                                    if "评分" in all_info[i+3]:
-                                        all_info.insert(i+3, "None")
+                                    if "评分" in all_info[i + 3]:
+                                        all_info.insert(i + 3, "None")
                                     else:
-                                        all_info.insert(i+3, "None")
-                                        all_info.insert(i+4, "None")
+                                        all_info.insert(i + 3, "None")
+                                        all_info.insert(i + 4, "None")
                             else:
-                                if "主演" in all_info[i+2]:
-                                    if "评分" in all_info[i+3]:
-                                        all_info.insert(i+2, "None")
+                                if "主演" in all_info[i + 2]:
+                                    if "评分" in all_info[i + 3]:
+                                        all_info.insert(i + 2, "None")
                                     else:
-                                        all_info.insert(i+2, "None")
-                                        all_info.insert(i+4, "NOne")
+                                        all_info.insert(i + 2, "None")
+                                        all_info.insert(i + 4, "NOne")
                                 else:
-                                    if "评分" in all_info[i+2]:
-                                        all_info.insert(i+2, "None")
-                                        all_info.insert(i+3, "None")
+                                    if "评分" in all_info[i + 2]:
+                                        all_info.insert(i + 2, "None")
+                                        all_info.insert(i + 3, "None")
                                     else:
-                                        all_info.insert(i+2, "None")
-                                        all_info.insert(i+3, "None")
-                                        all_info.insert(i+4, "None")
+                                        all_info.insert(i + 2, "None")
+                                        all_info.insert(i + 3, "None")
+                                        all_info.insert(i + 4, "None")
                     except:
-                        if "导演" in all_info[i+2]:
-                            try:
-                                if "主演" in all_info[i+3]:
-                                    all_info.insert(i+4, "None")
-                                else:
-                                    all_info.insert(i+3, "None")
-                            except:
-                                all_info.insert(i+3, "None")
-                                all_info.insert(i+4, "None")
-                        else:
-                            if "主演" in all_info[i+2]:
+                        try:
+                            if "导演" in all_info[i + 2]:
                                 try:
-                                    if "评分" in all_info[i+3]:
-                                        all_info.insert(i+2, "None")
+                                    if "主演" in all_info[i + 3]:
+                                        all_info.insert(i + 4, "None")
+                                    else:
+                                        all_info.insert(i + 3, "None")
                                 except:
-                                    all_info.insert(i+2, "None")
-                                    all_info.insert(i+4, "None")
+                                    all_info.insert(i + 3, "None")
+                                    all_info.insert(i + 4, "None")
+                            else:
+                                if "主演" in all_info[i + 2]:
+                                    try:
+                                        if "评分" in all_info[i + 3]:
+                                            all_info.insert(i + 2, "None")
+                                    except:
+                                        all_info.insert(i + 2, "None")
+                                        all_info.insert(i + 4, "None")
+                        except:
+                            all_info.insert(i + 2, "None")
+                            all_info.insert(i + 3, "None")
+                            all_info.insert(i + 4, "None")
                     work_name = all_info[i].replace("\n", "")
                     position = all_info[i + 1].replace("\n", "")
                     director = all_info[i + 2].replace("\n", "").replace("导演：", "")
@@ -256,7 +263,6 @@ def main():
                 status = urllib.urlopen(actor_url).code
                 print status
                 time.sleep(1)
-               # 演员链接可能出错，导致页面不存在，所以先判断是否是403页面 
                 if status == 403:
                     with open("../data/wrong_url.txt", "a+")as dd:
                         dd.write(actor_url + "\n")
