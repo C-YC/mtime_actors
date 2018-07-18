@@ -11,11 +11,11 @@ input: <br>
 `sudo chmod 777 star.sh`<br>
 `sh star.sh`
 ## bullet points
-key points that I have learned <br>
+key skills that I have learned <br>
 * 断点重续 <br>
 define a list to hold the crawled links <br>
 every time before calling the functions, first determine if the link is in the list
 * csv
 * list.insert()
 * os.system()
-* shell脚本
+* shell
