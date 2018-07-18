@@ -2,11 +2,13 @@
 """
 author:C-YC
 target:时光网爬取演员作品年表和荣誉成就
-finish date：2018,07,17
+finish date：2018,07,18
 """
 import sys
 import time
+import os
 import json
+import urllib
 import auto_star
 import pandas as pd
 from selenium import webdriver
@@ -217,33 +219,46 @@ def main():
             if actor_url in crawled_url:
                 pass
             else:
-                driver.get(actor_url)
+                status = urllib.urlopen(actor_url).code
+                print status
                 time.sleep(1)
-                actor_name = driver.find_element_by_xpath("//div[@class='per_head']//h2").text
-                print "=================", actor_name, "================="
-                get_filmographies(actor_url)
-                print "******* 作品年表 爬取成功 *******\n"
-                time.sleep(1)
-                get_awards(actor_url)
-                print "******* 荣誉成就 爬取成功 *******\n"
-                time.sleep(1)
-                works_processing(actor_name)
-                print "******* 成功处理 作品数据 *******\n"
-                time.sleep(1)
-                awards_processing(actor_name)
-                print "******* 成功处理 荣誉数据 *******\n"
-                with open("../data/demo.txt", "w+")as ms:
-                    ms.write("")
-                with open("../data/demo_awards.txt", "w+")as ns:
-                    ns.write("")
-                try:
-                    with open("../actor_works/"+actor_name+".csv", "a+")as fls:
-                        fls.write("")
-                    with open("../data/finish_url.txt", "a+")as d:
-                        d.write(actor_url+"\n")
-                except:
+               # 演员链接可能出错，导致页面不存在，所以先判断是否是403页面 
+                if status == 403:
                     with open("../data/wrong_url.txt", "a+")as dd:
-                        dd.write(actor_url+"\n")
+                        dd.write(actor_url + "\n")
+                    time.sleep(1)
+                    with open("../data/finish_url.txt", "a+")as d:
+                        d.write(actor_url + "\n")
+                else:
+                    driver.get(actor_url)
+                    time.sleep(2)
+                    actor_name = driver.find_element_by_xpath("//div[@class='per_header']/h2").text
+                    time.sleep(1)
+                    print "=================", actor_name, "================="
+                    get_filmographies(actor_url)
+                    print "******* 作品年表 爬取成功 *******\n"
+                    time.sleep(1)
+                    get_awards(actor_url)
+                    print "******* 荣誉成就 爬取成功 *******\n"
+                    time.sleep(1)
+                    works_processing(actor_name)
+                    print "******* 成功处理 作品数据 *******\n"
+                    time.sleep(1)
+                    awards_processing(actor_name)
+                    print "******* 成功处理 荣誉数据 *******\n"
+                    with open("../data/demo.txt", "w+")as ms:
+                        ms.write("")
+                    with open("../data/demo_awards.txt", "w+")as ns:
+                        ns.write("")
+                    try:
+                        with open("../actor_works/" + actor_name + ".csv", "a+")as fls:
+                            fls.write("")
+                    except:
+                        with open("../data/wrong_url.txt", "a+")as ff:
+                            ff.write(actor_url + "\n")
+                    finally:
+                        with open("../data/finish_url.txt", "a+")as db:
+                            db.write(actor_url + "\n")
 
 
 def star():
@@ -263,6 +278,10 @@ def star():
 
 
 if __name__ == '__main__':
+    if not os.path.exists("../actor_awards"):
+        os.mkdir("../actor_awards")
+    if not os.path.exists("../actor_works"):
+        os.mkdir("../actor_works")
     with open("../data/demo.txt", "w+")as f:
         f.write("")
     with open("../data/demo_awards.txt", "w+")as f:
