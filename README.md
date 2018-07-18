@@ -12,7 +12,7 @@ input: <br>
 `sh star.sh`
 ## bullet points
 key skills that I have learned <br>
-* 断点重续 <br>
+* breakpoint renewed <br>
 define a list to hold the crawled links <br>
 every time before calling the functions, first determine if the link is in the list
 * csv
