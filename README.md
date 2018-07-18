@@ -8,7 +8,6 @@ Using actor links derived from mongodb database to capture actors' works and ach
 ## operation description
 in the file directory, open the terminal <br>
 input: <br> 
-`sudo chmod 777 star.sh`<br>
 `sh star.sh`
 ## bullet points
 key skills that I have learned <br>
