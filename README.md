@@ -10,8 +10,8 @@ in the file directory, open the terminal <br>
 input: <br> 
 `sudo chmod 777 star.sh`<br>
 `sh star.sh`
-## points
-Some little knowledge I have learned <br>
+## bullet points
+key points that I have learned <br>
 * 断点重续 <br>
 define a list to hold the crawled links <br>
 every time before calling the functions, first determine if the link is in the list
