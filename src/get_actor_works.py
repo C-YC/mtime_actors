@@ -40,7 +40,7 @@ def get_filmographies(url):
             for r in range(1, int(total)+1):
                 filmography_urls = filmography_url + '#pageIndex=' + str(r)
                 print filmography_urls
-                time.sleep(0.5)
+                time.sleep(1)
                 driver.get(filmography_urls)
                 driver.refresh()
                 time.sleep(1)
@@ -68,8 +68,18 @@ def works_processing(actor_name):
         # 判断是否有不需要的数据，有，则将无用片段切去
         if "显示全部" in content:
             cont = content.split("显示全部")
-            contt = cont[0].split("第")[0]
-            content = contt + "`" + cont[1]
+            if len(cont) == 2:
+                cont0 = cont[0].split("第")[0]
+                content = cont0 + "`" + cont[1]
+            if len(cont) == 3:
+                cont1 = cont[0].split("第")[0]
+                cont2 = cont[1].split("第")[0]
+                content = cont1 + "`" + cont2 + "`" + cont[2]
+            if len(cont) == 4:
+                cont1 = cont[0].split("第")[0]
+                cont2 = cont[1].split("第")[0]
+                cont3 = cont[2].split("第")[0]
+                content = cont1 + "`" + cont2 + "`" + cont3 + "`" + cont[3]
         if len(content) != 0:
             all_info = content.replace("`\n", "").split("\n")
             year = all_info[0]
@@ -151,15 +161,20 @@ def works_processing(actor_name):
                     else:
                         all_info.insert(3, "None")
                 else:
-                    if "导演" in all_info[3]:
-                        all_info.insert(4, "None")
-                        all_info.insert(5, "None")
-                    if "主演" in all_info[3]:
-                        all_info.insert(3, "None")
-                        all_info.insert(5, "None")
-                    if "评分" in all_info[3]:
-                        all_info.insert(3, "None")
-                        all_info.insert(4, "None")
+                        if (len(all_info) - 1) == 3:
+                            if "导演" in all_info[3]:
+                                all_info.insert(4, "None")
+                                all_info.insert(5, "None")
+                            if "主演" in all_info[3]:
+                                all_info.insert(3, "None")
+                                all_info.insert(5, "None")
+                            if "评分" in all_info[3]:
+                                all_info.insert(3, "None")
+                                all_info.insert(4, "None")
+                        else:
+                            all_info.insert(3, "None")
+                            all_info.insert(4, "None")
+                            all_info.insert(5, "None")
                 work_name = all_info[1].replace("\n", "")
                 position = all_info[2].replace("\n", "")
                 director = all_info[3].replace("\n", "").replace("导演：", "")
@@ -175,7 +190,7 @@ def works_processing(actor_name):
                 row["score_number"] = score_number
                 works_info.append(row)
         works = pd.DataFrame(works_info)
-        works.to_csv("../data/demo.csv", index=False, sep=',')
+        works.to_csv("../actor_works/" + actor_name + ".csv", index=False, sep=',')
 
 
 def get_awards(url):
