@@ -22,8 +22,7 @@ Input: <br>
 ## Bullet points
 Key skills that I have learned <br>
 * Breakpoint renewed <br>
-define a list to hold the crawled links <br>
-every time before calling the functions, first determine if the link is in the list
+define three sets, one to store all links ，one to store crawled links and the third set is the complement of the first two sets. <br>
 * csv
 * mongodb
 * list.insert()
