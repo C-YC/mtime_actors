@@ -2,7 +2,7 @@
 """
 author:C-YC
 target:时光网爬取演员作品年表和荣誉成就
-finish date：2018,07,18
+finish date：2018,07,21
 """
 import sys
 import time
@@ -115,23 +115,32 @@ def works_processing(actor_name):
                                         all_info.insert(i + 4, "None")
                     except:
                         try:
-                            if "导演" in all_info[i + 2]:
-                                try:
-                                    if "主演" in all_info[i + 3]:
-                                        all_info.insert(i + 4, "None")
-                                    else:
-                                        all_info.insert(i + 3, "None")
-                                except:
-                                    all_info.insert(i + 3, "None")
-                                    all_info.insert(i + 4, "None")
-                            else:
-                                if "主演" in all_info[i + 2]:
+                            if all_info[i + 2]:
+                                if "导演" in all_info[i + 2]:
                                     try:
-                                        if "评分" in all_info[i + 3]:
-                                            all_info.insert(i + 2, "None")
+                                        if "主演" in all_info[i + 3]:
+                                            all_info.insert(i + 4, "None")
+                                        else:
+                                            all_info.insert(i + 3, "None")
                                     except:
-                                        all_info.insert(i + 2, "None")
+                                        all_info.insert(i + 3, "None")
                                         all_info.insert(i + 4, "None")
+                                else:
+                                    if "主演" in all_info[i + 2]:
+                                        try:
+                                            if "评分" in all_info[i + 3]:
+                                                all_info.insert(i + 2, "None")
+                                        except:
+                                            all_info.insert(i + 2, "None")
+                                            all_info.insert(i + 4, "None")
+                                    else:
+                                        if "评分" in all_info[i + 2]:
+                                            all_info.insert(i + 2, "None")
+                                            all_info.insert(i + 3, "None")
+                                        else:
+                                            all_info.insert(i + 2, "None")
+                                            all_info.insert(i + 3, "None")
+                                            all_info.insert(i + 4, "None")
                         except:
                             all_info.insert(i + 2, "None")
                             all_info.insert(i + 3, "None")
@@ -261,59 +270,61 @@ def awards_processing(actor_name):
 
 def main():
     # 定义一个列表存储已爬好的url
-    crawled_url = []
-    with open("../data/finish_url.txt", "r")as t:
-        lines = t.readlines()
-        for line in lines:
-            crawled_url.append(line.replace("\n", ""))
+    all_urls = set()
     with open("../data/export.txt", "r")as fl:
         urls = fl.readlines()
         for url in urls:
-            actor_url = url.replace("\n", "")
-            time.sleep(0.5)
-            # 如果url在其中，则跳过
-            if actor_url in crawled_url:
-                pass
-            else:
-                status = urllib.urlopen(actor_url).code
-                print status
-                time.sleep(1)
-                if status == 403:
-                    with open("../data/wrong_url.txt", "a+")as dd:
-                        dd.write(actor_url + "\n")
-                    time.sleep(1)
-                    with open("../data/finish_url.txt", "a+")as d:
-                        d.write(actor_url + "\n")
-                else:
-                    driver.get(actor_url)
-                    time.sleep(2)
-                    actor_name = driver.find_element_by_xpath("//div[@class='per_header']/h2").text
-                    time.sleep(1)
-                    print "=================", actor_name, "================="
-                    get_filmographies(actor_url)
-                    print "******* 作品年表 爬取成功 *******\n"
-                    time.sleep(1)
-                    get_awards(actor_url)
-                    print "******* 荣誉成就 爬取成功 *******\n"
-                    time.sleep(1)
-                    works_processing(actor_name)
-                    print "******* 成功处理 作品数据 *******\n"
-                    time.sleep(1)
-                    awards_processing(actor_name)
-                    print "******* 成功处理 荣誉数据 *******\n"
-                    with open("../data/demo.txt", "w+")as ms:
-                        ms.write("")
-                    with open("../data/demo_awards.txt", "w+")as ns:
-                        ns.write("")
-                    try:
-                        with open("../actor_works/" + actor_name + ".csv", "a+")as fls:
-                            fls.write("")
-                    except:
-                        with open("../data/wrong_url.txt", "a+")as ff:
-                            ff.write(actor_url + "\n")
-                    finally:
-                        with open("../data/finish_url.txt", "a+")as db:
-                            db.write(actor_url + "\n")
+            all_urls.add(url.replace("\n", ""))
+    time.sleep(1)
+    crawled_urls = set()
+    with open("../data/finish_url.txt", "r")as t:
+        lines = t.readlines()
+        for line in lines:
+            crawled_urls.add(line.replace("\n", ""))
+    time.sleep(1)
+    urls = set(all_urls - crawled_urls)
+    print len(urls)
+    for actor_url in urls:
+        time.sleep(0.5)
+        status = urllib.urlopen(actor_url).code
+        print status
+        time.sleep(1)
+        if status == 403:
+            with open("../data/wrong_url.txt", "a+")as dd:
+                dd.write(actor_url + "\n")
+            time.sleep(1)
+            with open("../data/finish_url.txt", "a+")as d:
+                d.write(actor_url + "\n")
+        else:
+            driver.get(actor_url)
+            time.sleep(2)
+            actor_name = driver.find_element_by_xpath("//div[@class='per_header']/h2").text
+            time.sleep(1)
+            print "=================", actor_name, "================="
+            get_filmographies(actor_url)
+            print "******* 作品年表 爬取成功 *******\n"
+            time.sleep(1)
+            get_awards(actor_url)
+            print "******* 荣誉成就 爬取成功 *******\n"
+            time.sleep(1)
+            works_processing(actor_name)
+            print "******* 成功处理 作品数据 *******\n"
+            time.sleep(1)
+            awards_processing(actor_name)
+            print "******* 成功处理 荣誉数据 *******\n"
+            with open("../data/demo.txt", "w+")as ms:
+                ms.write("")
+            with open("../data/demo_awards.txt", "w+")as ns:
+                ns.write("")
+            try:
+                with open("../actor_works/" + actor_name + ".csv", "a+")as fls:
+                    fls.write("")
+            except:
+                with open("../data/wrong_url.txt", "a+")as ff:
+                    ff.write(actor_url + "\n")
+            finally:
+                with open("../data/finish_url.txt", "a+")as db:
+                    db.write(actor_url + "\n")
 
 
 def star():
